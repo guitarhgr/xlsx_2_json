@@ -3,28 +3,31 @@
 
 
 ## 文件目录结构
-|-- cfg_output.json                                           // 导出配置
-|-- package.json                                               // 包json配置
+```
+|-- cfg_output.json                                    // 导出配置
+|-- package.json                                       // 包json配置
 |-- README.md
-|-- start.bat                                                       // 执行导出的批处理程序
-|-- tsconfig.json                                               // ts配置
-|-- yarn.lock                                                     // 包锁定配置
-|-- .vscode                                                        // vscode执行调试文件
+|-- start.bat                                          // 执行导出的批处理程序
+|-- tsconfig.json                                      // ts配置
+|-- yarn.lock                                          // 包锁定配置
+|-- .vscode                                            // vscode执行调试文件
 |   |-- launch.json
-|-- dist                                                               // 构建生成目录
+|-- dist                                               // 构建生成目录
 |   |-- main.js
 |   |-- main.js.map
-|-- excel                                                             // excel表
+|-- excel                                              // excel表
 |   |-- build.xlsx
 |   |-- prop.xlsx
-|-- keys                                                              // 表头对应key
+|-- keys                                               // 表头对应key
 |   |-- build.json
 |   |-- prop.json
-|-- src                                                                // 源码
+|-- src                                                // 源码
 |   |-- main.ts
-|-- templates                                                   // 导出模板
+|-- templates                                          // 导出模板
         |-- build.template
         |-- prop.template
+```
+
 
 ## 准备工作
 
