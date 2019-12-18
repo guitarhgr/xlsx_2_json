@@ -1,0 +1,12 @@
+
+let resultObj = {};
+
+for (let i = 0; i < mixData.length; i++) {
+    const data = mixData[i];
+
+    if (!data) return;
+
+    resultObj[data.level] = [data.level, data.diamond, data.gold]
+}
+
+return resultObj;

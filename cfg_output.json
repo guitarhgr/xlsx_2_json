@@ -1,0 +1,22 @@
+{
+    "build.xlsx": [
+        {
+            "sheetName": "build",
+            "startRow": 3,
+            "keyPath": "./keys/build.json",
+            "templatePath": "./templates/build.template",
+            "outputRoot": "",
+            "outputFile": "build.cfg"
+        }
+    ],
+    "prop.xlsx": [
+        {
+            "sheetName": "prop",
+            "startRow": 3,
+            "keyPath": "./keys/prop.json",
+            "templatePath": "./templates/prop.template",
+            "outputRoot": "",
+            "outputFile": "prop.cfg"
+        }
+    ]
+}

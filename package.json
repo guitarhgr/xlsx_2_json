@@ -1,0 +1,27 @@
+{
+  "name": "xlsx_2_json",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.ts",
+  "scripts": {
+    "start": "node dist/main.js",
+    "dev": "nodemon src/main.ts",
+    "build": "tsc -p ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^12.12.18",
+    "nodemon": "^2.0.2",
+    "ts-node": "^8.5.4",
+    "ts-node-dev": "^1.0.0-pre.44",
+    "typescript": "^3.7.3"
+  },
+  "dependencies": {
+    "@types/jsonfile": "^5.0.0",
+    "@types/node-xlsx": "^0.12.1",
+    "jsonfile": "^5.0.0",
+    "node-xlsx": "^0.15.0"
+  }
+}
