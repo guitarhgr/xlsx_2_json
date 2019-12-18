@@ -686,6 +686,11 @@ map-obj@^1.0.0, map-obj@^1.0.1:
   resolved "https://registry.npm.taobao.org/map-obj/download/map-obj-1.0.1.tgz#d933ceb9205d82bdcf4886f6742bdc2b4dea146d"
   integrity sha1-2TPOuSBdgr3PSIb2dCvcK03qFG0=
 
+mddir@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.npm.taobao.org/mddir/download/mddir-1.1.1.tgz#fa7ddd26b92558e6eb9f890d02d25a3f7cda056b"
+  integrity sha1-+n3dJrklWObrn4kNAtJaP3zaBWs=
+
 meow@^3.3.0:
   version "3.7.0"
   resolved "https://registry.npm.taobao.org/meow/download/meow-3.7.0.tgz?cache=0&sync_timestamp=1575730464003&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fmeow%2Fdownload%2Fmeow-3.7.0.tgz#72cb668b425228290abbfa856892587308a801fb"
