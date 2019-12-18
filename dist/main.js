@@ -8,7 +8,7 @@ var fs_1 = __importDefault(require("fs"));
 var node_xlsx_1 = __importDefault(require("node-xlsx"));
 var jsonfile_1 = __importDefault(require("jsonfile"));
 // ============================= 变量
-var OUTPUT_ROOT = 'E:\\Learn\\coder\\CocosProj\\FoodEscape\\assets\\resources\\config\\';
+var OUTPUT_ROOT = 'E:\\Learn\\coder\\CocosProj\\FoodEscape\\assets\\resources\\cfg\\';
 var cfgOutputObj = jsonfile_1.default.readFileSync('./cfg_output.json');
 // ============================= 方法
 /**

@@ -19,7 +19,7 @@ type TSheetData = {
 }
 
 // ============================= 变量
-const OUTPUT_ROOT = 'E:\\Learn\\coder\\CocosProj\\FoodEscape\\assets\\resources\\config\\';
+const OUTPUT_ROOT = 'E:\\Learn\\coder\\CocosProj\\FoodEscape\\assets\\resources\\cfg\\';
 const cfgOutputObj = jsonFile.readFileSync('./cfg_output.json');
 
 // ============================= 方法

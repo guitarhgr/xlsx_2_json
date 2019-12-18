@@ -6,7 +6,7 @@ for (let i = 0; i < mixData.length; i++) {
 
     if (!data) return;
 
-    resultObj[data.level] = [data.level, data.diamond, data.gold]
+    resultObj[data.level] = [data.level, data.cost, data.gold]
 }
 
 return resultObj;
