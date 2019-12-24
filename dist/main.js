@@ -7,10 +7,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var fs_1 = __importDefault(require("fs"));
 var node_xlsx_1 = __importDefault(require("node-xlsx"));
 var jsonfile_1 = __importDefault(require("jsonfile"));
+// ============================= 类型
 // ============================= 变量
-var OUTPUT_ROOT = 'E:\\Learn\\coder\\CocosProj\\FoodEscape\\assets\\resources\\cfg\\';
-var cfgOutputObj = jsonfile_1.default.readFileSync('./cfg_output.json');
+var buildCfg, ouputCfg;
+// let cfgBuild = jsonFile.readFileSync('./cfg_build')
+// const cfgOutput = jsonFile.readFileSync('./cfg_output.json');
+// const OUTPUT_ROOT = 'E:\\growup\\coder\\LayaProj\\Card\\Laya\\assets\\cfg\\';
 // ============================= 方法
+/**
+ * 初始化
+ */
+var init = function () {
+    buildCfg = jsonfile_1.default.readFileSync('./buildcfg.json');
+    ouputCfg = jsonfile_1.default.readFileSync('./outputcfg.json');
+};
 /**
  * 查找表索引
  * @param excelData excel数据
@@ -28,11 +38,11 @@ var findSheetIndex = function (excelData, sheetName) {
  * 操作导出配置表
  */
 var handleCfgOutput = function () {
-    for (var excelName in cfgOutputObj) {
-        var cfgArr = cfgOutputObj[excelName];
+    for (var excelName in ouputCfg) {
+        var cfgArr = ouputCfg[excelName];
         var _loop_1 = function (i) {
             var cfgOne = cfgArr[i];
-            var excelData = node_xlsx_1.default.parse("./excel/" + excelName);
+            var excelData = node_xlsx_1.default.parse(buildCfg.excelPath + "/" + excelName);
             var sheetIdx = findSheetIndex(excelData, cfgOne.sheetName);
             if (sheetIdx < 0)
                 return "continue";
@@ -71,7 +81,7 @@ var handleCfgOutput = function () {
  * @param data
  */
 var generateCfg = function (cfgOutput, sheetMixData) {
-    var path = cfgOutput.outputRoot || "" + OUTPUT_ROOT + cfgOutput.outputFile;
+    var path = cfgOutput.outputPath || buildCfg.outputPath + "/" + cfgOutput.outputFile;
     if (!cfgOutput.templatePath) {
         writeDataToFile(path, sheetMixData);
         return;
@@ -106,6 +116,13 @@ var writeDataToFile = function (path, exportData) {
         console.log('success');
     });
 };
+/**
+ * 立即执行
+ */
+var immediate = function () {
+    init();
+    handleCfgOutput();
+};
 // ============================= 立即执行
-handleCfgOutput();
+immediate();
 //# sourceMappingURL=main.js.map

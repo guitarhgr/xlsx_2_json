@@ -2,11 +2,11 @@
     "build.xlsx": [
         {
             "sheetName": "build",
-            "startRow": 3,
+            "startRow": 4,
             "keyPath": "./keys/build.json",
             "templatePath": "./templates/build.template",
             "outputRoot": "",
-            "outputFile": "build.cfg"
+            "outputFile": "build.json"
         }
     ],
     "prop.xlsx": [
@@ -16,7 +16,7 @@
             "keyPath": "./keys/prop.json",
             "templatePath": "./templates/prop.template",
             "outputRoot": "",
-            "outputFile": "prop.cfg"
+            "outputFile": "prop.json"
         }
     ]
 }

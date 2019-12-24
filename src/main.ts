@@ -2,33 +2,29 @@
 import fs from 'fs';
 import xlsx from 'node-xlsx';
 import jsonFile from 'jsonfile';
+import { Filed, BuildCfg, SheetCfg, SheetData } from './types';
 
 // ============================= 类型
-type TCfgOutput = {
-    sheetName: string,
-    startRow: number,
-    keyPath: string,
-    templatePath: string,
-    outputRoot: string,
-    outputFile: string
-}
 
-type TSheetData = {
-    name: string,
-    data: any[]
-}
 
 // ============================= 变量
-const OUTPUT_ROOT = 'E:\\Learn\\coder\\CocosProj\\FoodEscape\\assets\\resources\\cfg\\';
-const cfgOutputObj = jsonFile.readFileSync('./cfg_output.json');
+let buildCfg: BuildCfg, ouputCfg: any;
 
 // ============================= 方法
+/**
+ * 初始化
+ */
+const init = () => {
+    buildCfg = jsonFile.readFileSync('./buildcfg.json');
+    ouputCfg = jsonFile.readFileSync('./outputcfg.json');
+}
+
 /**
  * 查找表索引
  * @param excelData excel数据
  * @param sheetName 表名
  */
-const findSheetIndex = (excelData: TSheetData[], sheetName:string): number => {
+const findSheetIndex = (excelData: SheetData[], sheetName:string): number => {
     for (let i = 0; i < excelData.length; i++) {
         const sheetData = excelData[i];
 
@@ -42,19 +38,19 @@ const findSheetIndex = (excelData: TSheetData[], sheetName:string): number => {
  * 操作导出配置表
  */
 const handleCfgOutput = () => {
-    for (let excelName in cfgOutputObj) {
-        const cfgArr: TCfgOutput[] = cfgOutputObj[excelName];
+    for (let excelName in ouputCfg) {
+        const cfgArr: SheetCfg[] = ouputCfg[excelName];
 
         for (let i = 0; i < cfgArr.length; i++) {
-            const cfgOne: TCfgOutput = cfgArr[i];
-            const excelData: TSheetData[] = xlsx.parse(`./excel/${excelName}`);
+            const cfgOne: SheetCfg = cfgArr[i];
+            const excelData: SheetData[] = xlsx.parse(`${buildCfg.excelPath}/${excelName}`);
             const sheetIdx:number = findSheetIndex(excelData, cfgOne.sheetName);
     
             if (sheetIdx < 0) continue;
     
-            const sheetData: TSheetData = excelData[sheetIdx];
+            const sheetData: SheetData = excelData[sheetIdx];
             const sheetHeader: string[] = sheetData.data[cfgOne.startRow-2];
-            const keyJson: any = jsonFile.readFileSync(cfgOne.keyPath);
+            const keyJson: any = jsonFile.readFileSync((cfgOne.keyPath as string));
             const headerMapKey: string[] = [];
     
             sheetHeader.forEach((item: string) => {
@@ -92,8 +88,8 @@ const handleCfgOutput = () => {
  * @param cfgOutput 
  * @param data 
  */
-const generateCfg = (cfgOutput: TCfgOutput, sheetMixData: any[]) => {
-    const path = cfgOutput.outputRoot || `${OUTPUT_ROOT}${cfgOutput.outputFile}`;
+const generateCfg = (cfgOutput: SheetCfg, sheetMixData: any[]) => {
+    const path = cfgOutput.outputPath || `${buildCfg.outputPath}/${cfgOutput.outputFile}`;
 
     if (!cfgOutput.templatePath) {
         writeDataToFile(path, sheetMixData);
@@ -139,5 +135,13 @@ const writeDataToFile = (path: string, exportData: any) => {
         console.log('success');
     });
 };
+
+/**
+ * 立即执行
+ */
+const immediate = () => {
+    init();
+    handleCfgOutput();
+};
 // ============================= 立即执行
-handleCfgOutput();
+immediate();
