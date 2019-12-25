@@ -1,4 +1,9 @@
 {
-	"excelPath": "E:/growup/coder/NodeProj/xlsx_2_json/excel",
-	"outputPath": "E:/growup/coder/NodeProj/xlsx_2_json/src"
+	"excelPath": "../../LayaProj/cards/build",
+	"outputPath": "../../LayaProj/cards/Card/laya/assets/cfg",
+	"formula": {
+		"outputPath": "../../LayaProj/cards/Card/laya/assets/cfg",
+		"fileName": "formulaCfg.ts",
+		"importStr": "import { Formula } from 'app/mod/formula';"
+	}
 }

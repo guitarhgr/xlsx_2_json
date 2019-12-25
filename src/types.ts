@@ -1,7 +1,7 @@
 /**
  * 字段类型
  */
-export type Filed = 'number' | 'string' | 'object' | 'function';
+export type Field = 'number' | 'string' | 'object' | 'function';
 
 /**
  * 构建配置
@@ -12,9 +12,26 @@ export interface BuildCfg {
      */
     excelPath: string;
     /**
-     * 到处路径
+     * 导出路径
      */
     outputPath: string;
+    /**
+     * 公式配置
+     */
+    formula: {
+        /**
+         * 导出路径
+         */
+        outputPath: string,
+        /**
+         * 文件名
+         */
+        fileName: string,
+        /**
+         * 引用的字符串
+         */
+		importStr: string,
+	}
 }
 
 /**
@@ -37,22 +54,17 @@ export interface SheetCfg {
     /**
      * 模板路径
      */
-    templatePath: string;
-    /**
-     * 键路径
-     */
-    keyPath?: string;
+    templatePath?: string;
     /**
      * 导出路径
      */
     outputPath?: string;
-    
 }
 
 /**
  * 表数据
  */
-export interface SheetData {
+export interface SheetObj {
     /**
      * 表名称
      */
@@ -61,4 +73,14 @@ export interface SheetData {
      * 数据
      */
     data: any[];
+}
+
+/**
+ * 支持类型
+ */
+export enum SupportType {
+    /**
+     * xlsx
+     */
+    XLSX = '.xlsx',
 }

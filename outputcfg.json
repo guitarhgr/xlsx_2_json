@@ -3,20 +3,9 @@
         {
             "sheetName": "build",
             "startRow": 4,
-            "keyPath": "./keys/build.json",
-            "templatePath": "./templates/build.template",
-            "outputRoot": "",
-            "outputFile": "build.json"
-        }
-    ],
-    "prop.xlsx": [
-        {
-            "sheetName": "prop",
-            "startRow": 3,
-            "keyPath": "./keys/prop.json",
-            "templatePath": "./templates/prop.template",
-            "outputRoot": "",
-            "outputFile": "prop.json"
+            "outputFile": "build.json",
+            "templatePath": "",
+            "outputPath": ""
         }
     ]
 }
