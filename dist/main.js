@@ -58,8 +58,9 @@ var init = function () {
     formulaStr = buildCfg.formula.importStr;
 };
 /**
- * 读取目标路径
- * @param filePath
+ * 读取目标路径文件
+ * @param filePath 文件路径
+ * @param fileCB 操作文件回调
  */
 var readTargetFile = function (filePath, fileCB) {
     // 读取文件夹
@@ -87,14 +88,14 @@ var readTargetFile = function (filePath, fileCB) {
 };
 /**
  * 删除文件
- * @param fileDir
+ * @param fileDir 文件全路径
  */
 var deleteFile = function (fileDir) {
     fs_1.default.unlinkSync(fileDir);
 };
 /**
  * 处理文件
- * @param fileDir
+ * @param fileDir 文件全路径
  */
 var handleFile = function (fileDir) {
     var splitArr = fileDir.split('\\');
@@ -108,6 +109,8 @@ var handleFile = function (fileDir) {
 };
 /**
  * 操作配置表
+ * @param fileName 文件名称
+ * @param filrDir 文件全路径
  */
 var handleExcel = function (fileName, filrDir) {
     var excelData = node_xlsx_1.default.parse(filrDir);
@@ -128,17 +131,20 @@ var handleExcel = function (fileName, filrDir) {
         var originData = sheetData.slice(Constants.START_ROW - 1);
         // 混合数据
         var blendData = blendSheetData(originData, fieldTypes, mapkey, fileName, sheetName);
-        // writeDataToFile(`${buildCfg.outputPath}/${sheetName}.json`, blendData.vals);
         handleData[sheetName] = blendData;
     }
     writeDataToFile(buildCfg.outputPath + "/" + fileName.replace(types_1.SupportType.XLSX, '') + ".json", handleData);
 };
 /**
- * 混合类型
+ * 处理混合表数据
+ * @param origin 原始数据
+ * @param fieldTypes 字段类型
+ * @param mapkey 映射键
+ * @param excelName excel名称
+ * @param sheetName 表格名称
  */
 var blendSheetData = function (origin, fieldTypes, mapkey, excelName, sheetName) {
     var originObj = {};
-    // let primaryKeyIdx: number[] = getPrimayKeyIdxs(mapkey);
     origin.forEach(function (raws) {
         var blendRaws = [];
         raws.forEach(function (val, index) {
@@ -161,21 +167,26 @@ var blendSheetData = function (origin, fieldTypes, mapkey, excelName, sheetName)
     };
 };
 /**
- * 转换映射key
+ * 转换映射key(去掉主键标识)
  */
 var convertMapkey = function (mapkey) {
     var result = [];
     mapkey.forEach(function (key) {
-        result.push(key.replace('!', ''));
+        result.push(key.replace(Constants.PRIMAY_FLAG, ''));
     });
     return result;
 };
+/**
+ * 是否是对象
+ * @param val 判断值
+ */
 var isObject = function (val) {
     return typeof val === 'object';
 };
 /**
  * 获取主键索引(默认0号位作为key)
  * @param mapkey 映射键
+ * @param val 值
  */
 var getPrimayKey = function (mapkey, val) {
     if (!val.length)
@@ -191,12 +202,12 @@ var getPrimayKey = function (mapkey, val) {
 };
 /**
  * 转换为类型值
- * @param val
- * @param type
+ * @param val 值
+ * @param type 字段类型
  */
 var convertToTypeVal = function (val, type) {
     var result = val;
-    var splitArr = type.split('|');
+    var splitArr = type.replace(/\s*/g, "").split('|');
     type = splitArr[0];
     switch (type) {
         case 'string':
@@ -216,15 +227,15 @@ var convertToTypeVal = function (val, type) {
     return result;
 };
 /**
- *
- * @param fnStr
- * @param param
+ * 生成函数字段
+ * @param fnStr 函数体
+ * @param param 参数
  */
 var generateFnField = function (fnStr, param) {
     if (formulaMap.get(fnStr))
         return;
     // TODO 这里根本不知道导入的Formula
-    formulaStr = formulaStr + "Formula.set(" + fnStr + ", function (" + (param || '') + ") { return " + fnStr + " });";
+    formulaStr = formulaStr + "Formula.set('" + fnStr + "', function (" + (param || '') + ") { return " + fnStr + " });";
     writeFormulaTimer && clearTimeout(writeFormulaTimer);
     writeFormulaTimer = setTimeout(function () {
         writeDataToFile(buildCfg.formula.outputPath + "/" + buildCfg.formula.fileName, formulaStr, false);
@@ -232,9 +243,9 @@ var generateFnField = function (fnStr, param) {
 };
 /**
  * 将数据写入文件
- * @param path
- * @param data
- * @param isStringify
+ * @param path 路径
+ * @param data 数据
+ * @param isStringify 是否需要序列化
  */
 var writeDataToFile = function (path, data, isStringify) {
     if (isStringify === void 0) { isStringify = true; }
@@ -245,7 +256,7 @@ var writeDataToFile = function (path, data, isStringify) {
             return;
         }
         exportData = null;
-        console.log(" log:: write [" + path + "] success");
+        console.log("log :: write [" + path + "] success");
     });
 };
 // ============================= 立即执行

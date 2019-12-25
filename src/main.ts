@@ -51,8 +51,9 @@ const init = () => {
 }
 
 /**
- * 读取目标路径
- * @param filePath 
+ * 读取目标路径文件
+ * @param filePath 文件路径
+ * @param fileCB 操作文件回调
  */
 const readTargetFile = (filePath: string, fileCB?: Function) => {
 
@@ -85,7 +86,7 @@ const readTargetFile = (filePath: string, fileCB?: Function) => {
 
 /**
  * 删除文件
- * @param fileDir 
+ * @param fileDir 文件全路径
  */
 const deleteFile = (fileDir: string) => {
     fs.unlinkSync(fileDir);
@@ -93,7 +94,7 @@ const deleteFile = (fileDir: string) => {
 
 /**
  * 处理文件
- * @param fileDir 
+ * @param fileDir 文件全路径
  */
 const handleFile = (fileDir: string) => {
     const splitArr: string[] = fileDir.split('\\');
@@ -109,6 +110,8 @@ const handleFile = (fileDir: string) => {
 
 /**
  * 操作配置表
+ * @param fileName 文件名称
+ * @param filrDir 文件全路径
  */
 const handleExcel = (fileName: string, filrDir: string) => {
     const excelData: SheetObj[] = xlsx.parse(filrDir);
@@ -133,7 +136,6 @@ const handleExcel = (fileName: string, filrDir: string) => {
         // 混合数据
         const blendData: any = blendSheetData(originData, fieldTypes, mapkey, fileName, sheetName);
 
-        // writeDataToFile(`${buildCfg.outputPath}/${sheetName}.json`, blendData.vals);
         handleData[sheetName] = blendData;
     }
 
@@ -141,11 +143,15 @@ const handleExcel = (fileName: string, filrDir: string) => {
 };
 
 /**
- * 混合类型
+ * 处理混合表数据
+ * @param origin 原始数据
+ * @param fieldTypes 字段类型
+ * @param mapkey 映射键
+ * @param excelName excel名称
+ * @param sheetName 表格名称
  */
 const blendSheetData = (origin: any[], fieldTypes: Field[], mapkey: string[], excelName: string, sheetName: string) => {
     let originObj: any = {};
-    // let primaryKeyIdx: number[] = getPrimayKeyIdxs(mapkey);
     
     origin.forEach((raws: any[]) => {
         let blendRaws: any = [];
@@ -174,18 +180,22 @@ const blendSheetData = (origin: any[], fieldTypes: Field[], mapkey: string[], ex
     };
 };
 /**
- * 转换映射key
+ * 转换映射key(去掉主键标识)
  */
 const convertMapkey = (mapkey: string[]): string[] => {
     let result: string[] = [];
 
     mapkey.forEach((key: string) => {
-        result.push(key.replace('!', ''));
+        result.push(key.replace(Constants.PRIMAY_FLAG, ''));
     });
 
     return result;
 };
 
+/**
+ * 是否是对象
+ * @param val 判断值
+ */
 const isObject = (val: any): boolean => {
     return typeof val === 'object';
 }
@@ -193,6 +203,7 @@ const isObject = (val: any): boolean => {
 /**
  * 获取主键索引(默认0号位作为key)
  * @param mapkey 映射键
+ * @param val 值
  */
 const getPrimayKey = (mapkey: string[], val: any[]): string => {
     if (!val.length) return '';
@@ -212,12 +223,12 @@ const getPrimayKey = (mapkey: string[], val: any[]): string => {
 
 /**
  * 转换为类型值
- * @param val 
- * @param type 
+ * @param val 值
+ * @param type 字段类型
  */
 const convertToTypeVal = (val: any, type: Field): any => {
     let result = val;
-    let splitArr = type.split('|');
+    let splitArr = type.replace(/\s*/g,"").split('|');
 
     type = (splitArr[0] as Field);
 
@@ -241,15 +252,15 @@ const convertToTypeVal = (val: any, type: Field): any => {
 };
 
 /**
- * 
- * @param fnStr 
- * @param param 
+ * 生成函数字段
+ * @param fnStr 函数体
+ * @param param 参数
  */
 const generateFnField = (fnStr: string, param: string) => {
     if (formulaMap.get(fnStr)) return;
 
     // TODO 这里根本不知道导入的Formula
-    formulaStr = `${formulaStr}Formula.set(${fnStr}, function (${param||''}) { return ${fnStr} });`;
+    formulaStr = `${formulaStr}Formula.set('${fnStr}', function (${param||''}) { return ${fnStr} });`;
 
     writeFormulaTimer && clearTimeout(writeFormulaTimer);
 
@@ -260,9 +271,9 @@ const generateFnField = (fnStr: string, param: string) => {
 
 /**
  * 将数据写入文件
- * @param path 
- * @param data 
- * @param isStringify 
+ * @param path 路径
+ * @param data 数据
+ * @param isStringify 是否需要序列化
  */
 const writeDataToFile = (path: string, data: any, isStringify = true) => {
     let exportData = isStringify ? JSON.stringify(data) : data;
@@ -275,7 +286,7 @@ const writeDataToFile = (path: string, data: any, isStringify = true) => {
 
         exportData = null;
         
-        console.log(` log:: write [${path}] success`);
+        console.log(`log :: write [${path}] success`);
     });
 };
 
