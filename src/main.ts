@@ -77,7 +77,7 @@ const readTargetFile = (filePath: string, fileCB?: Function) => {
                     fileCB && fileCB(fileDir);
                 }
                 else if (stats.isDirectory()) {
-                    readTargetFile(fileDir);
+                    readTargetFile(fileDir, fileCB);
                 }
             });
         });

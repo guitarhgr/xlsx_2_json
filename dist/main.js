@@ -80,7 +80,7 @@ var readTargetFile = function (filePath, fileCB) {
                     fileCB && fileCB(fileDir);
                 }
                 else if (stats.isDirectory()) {
-                    readTargetFile(fileDir);
+                    readTargetFile(fileDir, fileCB);
                 }
             });
         });
