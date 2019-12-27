@@ -1,8 +1,8 @@
 {
-	"excelPath": "../../LayaProj/cards/build",
-	"outputPath": "../../LayaProj/cards/Card/laya/assets/cfg",
+	"excelPath": "./excel",
+	"outputPath": "../Card/laya/assets/cfg",
 	"formula": {
-		"outputPath": "../../LayaProj/cards/Card/laya/assets/cfg",
+		"outputPath": "../Card/src/app/mod",
 		"fileName": "formulaCfg.ts",
 		"importStr": "import { Formula } from 'app/mod/formula';"
 	}
