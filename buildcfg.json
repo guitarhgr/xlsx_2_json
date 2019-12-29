@@ -1,6 +1,7 @@
 {
 	"excelPath": "./excel",
 	"outputPath": "../Card/laya/assets/cfg",
+	"outputSuffix": ".json",
 	"formula": {
 		"outputPath": "../Card/src/app/mod",
 		"fileName": "formulaCfg.ts",

@@ -1,17 +1,16 @@
 // ============================= 导入
 import fs from 'fs';
-import xlsx from 'node-xlsx';
 import jsonFile from 'jsonfile';
 import path from 'path';
-import { Field, BuildCfg, SheetObj, SupportType } from './types';
-
+import { Field, BuildCfg, SupportType } from './types';
+import xlsx from 'xlsx';
 // ============================= 类型
 
 
 // ============================= 常量
 class Constants {
     /**开始行 */
-    static START_ROW = 4;
+    static START_ROW = 2;
     /**主键标识 */
     static PRIMAY_FLAG = '!';
 };
@@ -102,10 +101,49 @@ const handleFile = (fileDir: string) => {
     const fileSuffix: SupportType = (fileName.substr(fileName.lastIndexOf('.')) as SupportType);
 
     switch (fileSuffix) {
+        case SupportType.XLS:
+            handleExcel(fileName.replace(SupportType.XLS, ''), fileDir);
+            break;
         case SupportType.XLSX:
-            handleExcel(fileName, fileDir);
+            handleExcel(fileName.replace(SupportType.XLSX, ''), fileDir);
             break;
     }
+};
+
+/**
+ * 获取字段类型
+ * @param mapkey 映射键
+ * @param keytype 键-类型
+ */
+const getFieldTypes = (mapkey: string[], keytype: any): Field[] => {
+    const fieldTypes: Field[] = [];
+
+    mapkey.forEach((key: string) => {
+        fieldTypes.push(keytype[key] || '');
+    });
+
+    return fieldTypes;
+};
+
+/**
+ * 处理表数据
+ * @param data 数据
+ * @param mapkey 映射键
+ */
+const handleSheetData = (dataArr: any[], mapkey: string[]) => {
+    const result: any[] = [];
+
+    dataArr.forEach((data: any) => {
+        const rawData: any[] = [];
+
+        mapkey.forEach((key: string) => {
+            rawData.push(data[key] || 0);
+        });
+
+        result.push(rawData);
+    });
+
+    return result;
 };
 
 /**
@@ -114,32 +152,30 @@ const handleFile = (fileDir: string) => {
  * @param filrDir 文件全路径
  */
 const handleExcel = (fileName: string, filrDir: string) => {
-    const excelData: SheetObj[] = xlsx.parse(filrDir);
-
-    if (!excelData.length) return;
-
+    const workBook: xlsx.WorkBook = xlsx.readFile(filrDir);
+    const sheetNames: string[] = workBook.SheetNames;
+    const sheets: xlsx.WorkSheet = workBook.Sheets;
     const handleData: any = {};
 
-    for (let i = 0; i < excelData.length; i++) {
-        const sheetObj: SheetObj = excelData[i];
-        const sheetData: any[] = sheetObj.data;
-        const sheetName: string = sheetObj.name;
+    for (let i = 0; i < sheetNames.length; i++) {
+        const sheetName: string = sheetNames[i];
+        const sheetData: Object[] = xlsx.utils.sheet_to_json(sheets[sheetName]);
 
-        if (sheetData.length < 4) continue;
+        if (sheetData.length < 3) continue;
 
         // 映射键
-        const mapkey: string[] = [...sheetData[Constants.START_ROW - 4]];
+        const mapkey: string[] = Object.keys(sheetData[0]);
         // 字段类型
-        const fieldTypes: Field[] = [...sheetData[Constants.START_ROW - 3]];
+        const fieldTypes: Field[] = getFieldTypes(mapkey, sheetData[0]);
         // 原始数据
-        const originData: any[] = sheetData.slice(Constants.START_ROW - 1);
+        const originData: any[] = handleSheetData(sheetData.slice(Constants.START_ROW), mapkey);
         // 混合数据
         const blendData: any = blendSheetData(originData, fieldTypes, mapkey, fileName, sheetName);
 
         handleData[sheetName] = blendData;
     }
 
-    writeDataToFile(`${buildCfg.outputPath}/${fileName.replace(SupportType.XLSX, '')}.json`, handleData);
+    writeDataToFile(`${buildCfg.outputPath}/${fileName}${buildCfg.outputSuffix}`, handleData)
 };
 
 /**
@@ -234,17 +270,17 @@ const convertToTypeVal = (val: any, type: Field): any => {
 
     switch (type) {
         case 'string':
-            result = `${result}`;
+            result = result ? `${result}` : '';
             break;
         case 'number':
-            result = Number(result);
+            result = result ? Number(result) : 0;
             break;
         case 'object':
-            result = JSON.parse(result);
+            result = result ? JSON.parse(result) : '';
             break;
         case 'function':
             result = `${result}`;
-            generateFnField(val, splitArr[1]);
+            result && generateFnField(val, splitArr[1]);
             break;
     }
 

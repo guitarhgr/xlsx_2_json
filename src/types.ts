@@ -16,6 +16,10 @@ export interface BuildCfg {
      */
     outputPath: string;
     /**
+     * 导出后缀名
+     */
+    outputSuffix: string;
+    /**
      * 公式配置
      */
     formula: {
@@ -83,4 +87,5 @@ export enum SupportType {
      * xlsx
      */
     XLSX = '.xlsx',
+    XLS  = '.xls'
 }

@@ -1,28 +1,21 @@
 "use strict";
-var __spreadArrays = (this && this.__spreadArrays) || function () {
-    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
-    for (var r = Array(s), k = 0, i = 0; i < il; i++)
-        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-            r[k] = a[j];
-    return r;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 // ============================= 导入
 var fs_1 = __importDefault(require("fs"));
-var node_xlsx_1 = __importDefault(require("node-xlsx"));
 var jsonfile_1 = __importDefault(require("jsonfile"));
 var path_1 = __importDefault(require("path"));
 var types_1 = require("./types");
+var xlsx_1 = __importDefault(require("xlsx"));
 // ============================= 类型
 // ============================= 常量
 var Constants = /** @class */ (function () {
     function Constants() {
     }
     /**开始行 */
-    Constants.START_ROW = 4;
+    Constants.START_ROW = 2;
     /**主键标识 */
     Constants.PRIMAY_FLAG = '!';
     return Constants;
@@ -102,10 +95,41 @@ var handleFile = function (fileDir) {
     var fileName = splitArr[splitArr.length - 1];
     var fileSuffix = fileName.substr(fileName.lastIndexOf('.'));
     switch (fileSuffix) {
+        case types_1.SupportType.XLS:
+            handleExcel(fileName.replace(types_1.SupportType.XLS, ''), fileDir);
+            break;
         case types_1.SupportType.XLSX:
-            handleExcel(fileName, fileDir);
+            handleExcel(fileName.replace(types_1.SupportType.XLSX, ''), fileDir);
             break;
     }
+};
+/**
+ * 获取字段类型
+ * @param mapkey 映射键
+ * @param keytype 键-类型
+ */
+var getFieldTypes = function (mapkey, keytype) {
+    var fieldTypes = [];
+    mapkey.forEach(function (key) {
+        fieldTypes.push(keytype[key] || '');
+    });
+    return fieldTypes;
+};
+/**
+ * 处理表数据
+ * @param data 数据
+ * @param mapkey 映射键
+ */
+var handleSheetData = function (dataArr, mapkey) {
+    var result = [];
+    dataArr.forEach(function (data) {
+        var rawData = [];
+        mapkey.forEach(function (key) {
+            rawData.push(data[key] || 0);
+        });
+        result.push(rawData);
+    });
+    return result;
 };
 /**
  * 操作配置表
@@ -113,27 +137,26 @@ var handleFile = function (fileDir) {
  * @param filrDir 文件全路径
  */
 var handleExcel = function (fileName, filrDir) {
-    var excelData = node_xlsx_1.default.parse(filrDir);
-    if (!excelData.length)
-        return;
+    var workBook = xlsx_1.default.readFile(filrDir);
+    var sheetNames = workBook.SheetNames;
+    var sheets = workBook.Sheets;
     var handleData = {};
-    for (var i = 0; i < excelData.length; i++) {
-        var sheetObj = excelData[i];
-        var sheetData = sheetObj.data;
-        var sheetName = sheetObj.name;
-        if (sheetData.length < 4)
+    for (var i = 0; i < sheetNames.length; i++) {
+        var sheetName = sheetNames[i];
+        var sheetData = xlsx_1.default.utils.sheet_to_json(sheets[sheetName]);
+        if (sheetData.length < 3)
             continue;
         // 映射键
-        var mapkey = __spreadArrays(sheetData[Constants.START_ROW - 4]);
+        var mapkey = Object.keys(sheetData[0]);
         // 字段类型
-        var fieldTypes = __spreadArrays(sheetData[Constants.START_ROW - 3]);
+        var fieldTypes = getFieldTypes(mapkey, sheetData[0]);
         // 原始数据
-        var originData = sheetData.slice(Constants.START_ROW - 1);
+        var originData = handleSheetData(sheetData.slice(Constants.START_ROW), mapkey);
         // 混合数据
         var blendData = blendSheetData(originData, fieldTypes, mapkey, fileName, sheetName);
         handleData[sheetName] = blendData;
     }
-    writeDataToFile(buildCfg.outputPath + "/" + fileName.replace(types_1.SupportType.XLSX, '') + ".json", handleData);
+    writeDataToFile(buildCfg.outputPath + "/" + fileName + buildCfg.outputSuffix, handleData);
 };
 /**
  * 处理混合表数据
@@ -211,17 +234,17 @@ var convertToTypeVal = function (val, type) {
     type = splitArr[0];
     switch (type) {
         case 'string':
-            result = "" + result;
+            result = result ? "" + result : '';
             break;
         case 'number':
-            result = Number(result);
+            result = result ? Number(result) : 0;
             break;
         case 'object':
-            result = JSON.parse(result);
+            result = result ? JSON.parse(result) : '';
             break;
         case 'function':
             result = "" + result;
-            generateFnField(val, splitArr[1]);
+            result && generateFnField(val, splitArr[1]);
             break;
     }
     return result;

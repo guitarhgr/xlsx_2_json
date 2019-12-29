@@ -9,11 +9,6 @@
   dependencies:
     "@types/node" "*"
 
-"@types/node-xlsx@^0.12.1":
-  version "0.12.1"
-  resolved "https://registry.npm.taobao.org/@types/node-xlsx/download/@types/node-xlsx-0.12.1.tgz#dbadbbf0c27f8a6c94d8b96588a8be1b815c61d8"
-  integrity sha1-26278MJ/imyU2LlliKi+G4FcYdg=
-
 "@types/node@*", "@types/node@^12.12.18":
   version "12.12.18"
   resolved "https://registry.npm.taobao.org/@types/node/download/@types/node-12.12.18.tgz?cache=0&sync_timestamp=1576499222199&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40types%2Fnode%2Fdownload%2F%40types%2Fnode-12.12.18.tgz#8d16634797d63c2af5bc647ce879f8de20b56469"
@@ -28,6 +23,13 @@
   version "0.0.30"
   resolved "https://registry.npm.taobao.org/@types/strip-json-comments/download/@types/strip-json-comments-0.0.30.tgz#9aa30c04db212a9a0649d6ae6fd50accc40748a1"
   integrity sha1-mqMMBNshKpoGSdaub9UKzMQHSKE=
+
+"@types/xlsx@^0.0.36":
+  version "0.0.36"
+  resolved "https://registry.npm.taobao.org/@types/xlsx/download/@types/xlsx-0.0.36.tgz#b5062003e5c5374ab4f08fdd3bf69da4d4013af8"
+  integrity sha1-tQYgA+XFN0q08I/dO/adpNQBOvg=
+  dependencies:
+    xlsx "*"
 
 abbrev@1:
   version "1.1.1"
@@ -117,7 +119,7 @@ braces@~3.0.2:
   dependencies:
     fill-range "^7.0.1"
 
-buffer-from@^1.0.0, buffer-from@^1.1.0:
+buffer-from@^1.0.0:
   version "1.1.1"
   resolved "https://registry.npm.taobao.org/buffer-from/download/buffer-from-1.1.1.tgz#32713bc028f75c02fdb710d7c7bcec1f2c6070ef"
   integrity sha1-MnE7wCj3XAL9txDXx7zsHyxgcO8=
@@ -145,7 +147,7 @@ capture-stack-trace@^1.0.0:
   resolved "https://registry.npm.taobao.org/capture-stack-trace/download/capture-stack-trace-1.0.1.tgz#a6c0bbe1f38f3aa0b92238ecb6ff42c344d4135d"
   integrity sha1-psC74fOPOqC5Ijjstv9Cw0TUE10=
 
-cfb@^1.1.2:
+cfb@^1.1.3:
   version "1.1.3"
   resolved "https://registry.npm.taobao.org/cfb/download/cfb-1.1.3.tgz#05de6816259c8e8bc32713aba905608ee385df66"
   integrity sha1-Bd5oFiWcjovDJxOrqQVgjuOF32Y=
@@ -752,14 +754,6 @@ node-notifier@^5.4.0:
     shellwords "^0.1.1"
     which "^1.3.0"
 
-node-xlsx@^0.15.0:
-  version "0.15.0"
-  resolved "https://registry.npm.taobao.org/node-xlsx/download/node-xlsx-0.15.0.tgz#1f1b0d7adce5c706e86bfd96a5aa0005bf8a9dc3"
-  integrity sha1-HxsNetzlxwboa/2WpaoABb+KncM=
-  dependencies:
-    buffer-from "^1.1.0"
-    xlsx "^0.14.1"
-
 nodemon@^2.0.2:
   version "2.0.2"
   resolved "https://registry.npm.taobao.org/nodemon/download/nodemon-2.0.2.tgz#9c7efeaaf9b8259295a97e5d4585ba8f0cbe50b0"
@@ -1309,13 +1303,13 @@ xdg-basedir@^3.0.0:
   resolved "https://registry.npm.taobao.org/xdg-basedir/download/xdg-basedir-3.0.0.tgz#496b2cc109eca8dbacfe2dc72b603c17c5870ad4"
   integrity sha1-SWsswQnsqNus/i3HK2A8F8WHCtQ=
 
-xlsx@^0.14.1:
-  version "0.14.5"
-  resolved "https://registry.npm.taobao.org/xlsx/download/xlsx-0.14.5.tgz#3637e914d791bdca7382816e173f7d725ed0e0d2"
-  integrity sha1-NjfpFNeRvcpzgoFuFz99cl7Q4NI=
+xlsx@*, xlsx@^0.15.4:
+  version "0.15.4"
+  resolved "https://registry.npm.taobao.org/xlsx/download/xlsx-0.15.4.tgz?cache=0&sync_timestamp=1577071588283&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fxlsx%2Fdownload%2Fxlsx-0.15.4.tgz#42ef1807829c4f9e98e8fce2641d53df5b5bde3e"
+  integrity sha1-Qu8YB4KcT56Y6PziZB1T31tb3j4=
   dependencies:
     adler-32 "~1.2.0"
-    cfb "^1.1.2"
+    cfb "^1.1.3"
     codepage "~1.14.0"
     commander "~2.17.1"
     crc-32 "~1.2.0"
@@ -1331,6 +1325,11 @@ yallist@^2.1.2:
   version "2.1.2"
   resolved "https://registry.npm.taobao.org/yallist/download/yallist-2.1.2.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fyallist%2Fdownload%2Fyallist-2.1.2.tgz#1c11f9218f076089a47dd512f93c6699a6a81d52"
   integrity sha1-HBH5IY8HYImkfdUS+TxmmaaoHVI=
+
+yarn@^1.21.1:
+  version "1.21.1"
+  resolved "https://registry.yarnpkg.com/yarn/-/yarn-1.21.1.tgz#1d5da01a9a03492dc4a5957befc1fd12da83d89c"
+  integrity sha512-dQgmJv676X/NQczpbiDtc2hsE/pppGDJAzwlRiADMTvFzYbdxPj2WO4PcNyriSt2c4jsCMpt8UFRKHUozt21GQ==
 
 yn@^3.0.0:
   version "3.1.1"

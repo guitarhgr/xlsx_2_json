@@ -20,9 +20,10 @@
   },
   "dependencies": {
     "@types/jsonfile": "^5.0.0",
-    "@types/node-xlsx": "^0.12.1",
+    "@types/xlsx": "^0.0.36",
     "jsonfile": "^5.0.0",
     "mddir": "^1.1.1",
-    "node-xlsx": "^0.15.0"
+    "xlsx": "^0.15.4",
+    "yarn": "^1.21.1"
   }
 }

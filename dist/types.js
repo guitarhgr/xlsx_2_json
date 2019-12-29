@@ -9,5 +9,6 @@ var SupportType;
      * xlsx
      */
     SupportType["XLSX"] = ".xlsx";
+    SupportType["XLS"] = ".xls";
 })(SupportType = exports.SupportType || (exports.SupportType = {}));
 //# sourceMappingURL=types.js.map
