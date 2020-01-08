@@ -1,31 +1,29 @@
 # nodejs的excel简单导出自定义json文件
 
 
-
 ## 文件目录结构
 ```
-|-- cfg_output.json                                    // 导出配置
-|-- package.json                                       // 包json配置
-|-- README.md
-|-- start.bat                                          // 执行导出的批处理程序
-|-- tsconfig.json                                      // ts配置
-|-- yarn.lock                                          // 包锁定配置
-|-- .vscode                                            // vscode执行调试文件
-|   |-- launch.json
-|-- dist                                               // 构建生成目录
-|   |-- main.js
-|   |-- main.js.map
-|-- excel                                              // excel表
-|   |-- build.xlsx
-|   |-- prop.xlsx
-|-- keys                                               // 表头对应key
-|   |-- build.json
-|   |-- prop.json
-|-- src                                                // 源码
-|   |-- main.ts
-|-- templates                                          // 导出模板
-        |-- build.template
-        |-- prop.template
+|-- .gitignore,                 // 忽略项
+|-- buildcfg.json,              // 构建配置
+|-- package-lock.json,          // 包锁定
+|-- package.json,               // 包配置
+|-- README.md,                  // 说明文档
+|-- start.bat,                  // 开始执行文件
+|-- tsconfig.json,              // ts配置
+|-- yarn.lock,                  // yarn包锁定
+|-- .vscode,                    // vscode调试文件
+|   |-- launch.json,
+|-- dist,                       // ts构建文件
+|   |-- main.js,
+|   |-- main.js.map,
+|   |-- types.js,
+|   |-- types.js.map,
+|-- excel,                      // excel表
+|   |-- build.xlsx,
+|   |-- prop.xlsx,
+|-- src,                        // 源码文件
+    |-- main.ts,
+    |-- types.ts
 ```
 
 
@@ -38,104 +36,93 @@
 
 ## 导出步骤
 
-### 1.配置导出路径OUTPUT_ROOT
+### 1.配置构建配置文件
 
-​    找到src下面的main.ts修改代码OUTPUT_ROOT为你需要导出文件路径
+```json
+{
+	"excelPath": "./excel", // excel表路径
+	"outputPath": "../Card/laya/assets/cfg", // 导出文件路径
+	"outputSuffix": ".json", // 导出文件后最名
+    // 公式导出配置
+	"formula": {
+		"outputPath": "../Card/src/app/mod", // 导出路径
+		"fileName": "formulaCfg.ts", // 导出文件名
+		"importStr": "import { Formula } from './formula';" // 公式引用(根据自己的项目决定)
+	}
+}
+```
+
+
 
 ### 2.放表
 
-​	把xlsx表放在项目根目录下的excel下
-
-### 3.配置导出cfg_output.json
-
-在cfg_output.json中新增导出配置，如下：
-
-```json
-{
-    // xlsx文件名
-    "build.xlsx": [
-        {
-            "sheetName": "build", // 表名
-            "startRow": 3, // 用到的数据开始行
-            "keyPath": "./keys/build.json", // [列项-键]映射json
-            "templatePath": "./templates/build.template", // 模板
-            "outputRoot": "", // 导出路径 不写为默认OUTPUT_ROOT路径
-            "outputFile": "build.cfg" // 生成文件名
-        }
-    ]
-}
-```
+​	把xlsx/xls表放在配置的excelPath路径下
 
 
 
-### 4. 配置[列项-键]映射json
+### 3. 配置表结构
 
-表:
+表结构:
 
-|      |          |          |
-| ---- | -------- | -------- |
-| 等级 | 消耗钻石 | 产出金币 |
-| 1    | 10       |          |
-| 2    | 20       |          |
+| !level | cost     | des      | func              |
+| ------ | -------- | -------- | ----------------- |
+| number | number   | number   | function \| a,b,c |
+| 等级   | 消耗钻石 | 产出描述 | a+b+c             |
+| 1      | 10       | 产出10   | a+b+c             |
+| 2      | 20       | 产出20   | a+b+c             |
 
-json(key[自定义的], val[对应表第二行文字]):
+- 键：第一行。使用“!”来作为主键标识符，不配置默认第一列第一行作为主键，不配置键名不导出
 
-```json
-{
-    "level": "等级",
-    "diamond": "消耗钻石",
-    "gold": "产出金币"
-}
-```
+- 值类型：第二行。string，number，object，function。
 
+  - string: 字符串
 
+  - number:  数字
+  - object: 对象(配置的对象必须满足对象格式)
+  - function: function的参数为“|”后的字符，用“,”分隔参数；导出公式统一放在buildcfg.json配置的导出公式路径文件里
 
-### 5.配置模板(默认导出json格式)
+- 键值中文名：第三行
 
-该模板是js的函数体,例如：
-
-```javascript
-let resultObj = {};
-
-for (let i = 0; i < mixData.length; i++) {
-    const data = mixData[i];
-
-    if (!data) return;
-
-    resultObj[data.level] = [data.level, data.diamond, data.gold]
-}
-
-return resultObj;
-```
-
-接收的数据是混合后的表数据数组[mixData]，例如：
-
-```
-[
-	{ level: 1, diamond: 10, gold: 20 },
-	{ level: 2, diamond: 20, gold: 40 }
-]
-```
+- 值：从第四行开始
 
 
 
-### 6.执行导出
+### 4.执行导出
 
 执行根目录下面的start.bat程序。
 
 
 
-## 注意
+### 5.导出结构
 
-- 表中的字符串数据项必须用“”引起来
+每张excel导出为一个json，里面的sheet作为这个json的每一项，例如build.xlsx导出为build.json:
+
+```json
+{
+    // sheet名称
+    "build.json": {
+        // 键
+        "keys": ["level", "diamond", "gold"],
+        // 值
+        "vals": {"1": ["1", 10, "f.a + f.b"], ......}
+    }
+}
+```
+
+导出的公式formula.ts
+
+```typescript
+import { Formula } from "./formula";
+Formula.set("f.a + f.b", function (f) { return f.a + f.b });
+.....
+```
+
+
+
+## 注意
 
 
 
 ## TODO
 
-- 测试导出公式
-- 配置导出基本项：导出路径，...
 - 显示报错log没做
-- 模板用其它方式实现，不用new Function的来实现
-- 指定表每项的类型(string | number |....)
-- 测试复杂数据导出
