@@ -111,6 +111,14 @@ const handleFile = (fileDir: string) => {
 };
 
 /**
+ * 获取映射键(空键不导出)
+ * @param origin 原始数据
+ */
+const getMapkey = (origin: string[]) => {
+    return origin.filter(item => !item.includes('__EMPTY'));
+};
+
+/**
  * 获取字段类型
  * @param mapkey 映射键
  * @param keytype 键-类型
@@ -164,7 +172,7 @@ const handleExcel = (fileName: string, filrDir: string) => {
         if (sheetData.length < 3) continue;
 
         // 映射键
-        const mapkey: string[] = Object.keys(sheetData[0]);
+        const mapkey: string[] = getMapkey(Object.keys(sheetData[0]));
         // 字段类型
         const fieldTypes: Field[] = getFieldTypes(mapkey, sheetData[0]);
         // 原始数据
@@ -270,17 +278,17 @@ const convertToTypeVal = (val: any, type: Field): any => {
 
     switch (type) {
         case 'string':
-            result = result ? `${result}` : '';
+            result = result ? `${result}`.replace(/\"/g, '\'') : '';
             break;
         case 'number':
             result = result ? Number(result) : 0;
             break;
         case 'object':
-            result = result ? JSON.parse(result) : '';
+            result = result ? (new Function('', `return ${result}`))(): '';
             break;
         case 'function':
-            result = `${result}`;
-            result && generateFnField(val, splitArr[1]);
+            result = `${result}`.replace(/\"/g, '\'');
+            result && generateFnField(result, splitArr[1]);
             break;
     }
 
@@ -296,7 +304,10 @@ const generateFnField = (fnStr: string, param: string) => {
     if (formulaMap.get(fnStr)) return;
 
     // TODO 这里根本不知道导入的Formula
-    formulaStr = `${formulaStr}Formula.set('${fnStr}', function (${param||''}) { return ${fnStr} });`;
+    formulaMap.set(fnStr, fnStr);
+    formulaStr = `${formulaStr}
+Formula.set("${fnStr}", function (${param||""}) { return ${fnStr} });
+`;
 
     writeFormulaTimer && clearTimeout(writeFormulaTimer);
 
@@ -313,7 +324,9 @@ const generateFnField = (fnStr: string, param: string) => {
  */
 const writeDataToFile = (path: string, data: any, isStringify = true) => {
     let exportData = isStringify ? JSON.stringify(data) : data;
-    
+    // let exportData = isStringify ? JSON.stringify(data).replace(/\\/g, '').replace(/\"/g, '\'') : data;
+    // let exportData = isStringify ? JSON.stringify(data) : data;
+
     fs.writeFile(path, exportData, 'utf-8', (err: NodeJS.ErrnoException | null) => {
         if (err) {
             console.log(err);

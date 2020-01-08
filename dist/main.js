@@ -104,6 +104,13 @@ var handleFile = function (fileDir) {
     }
 };
 /**
+ * 获取映射键(空键不导出)
+ * @param origin 原始数据
+ */
+var getMapkey = function (origin) {
+    return origin.filter(function (item) { return !item.includes('__EMPTY'); });
+};
+/**
  * 获取字段类型
  * @param mapkey 映射键
  * @param keytype 键-类型
@@ -147,7 +154,7 @@ var handleExcel = function (fileName, filrDir) {
         if (sheetData.length < 3)
             continue;
         // 映射键
-        var mapkey = Object.keys(sheetData[0]);
+        var mapkey = getMapkey(Object.keys(sheetData[0]));
         // 字段类型
         var fieldTypes = getFieldTypes(mapkey, sheetData[0]);
         // 原始数据
@@ -234,17 +241,17 @@ var convertToTypeVal = function (val, type) {
     type = splitArr[0];
     switch (type) {
         case 'string':
-            result = result ? "" + result : '';
+            result = result ? ("" + result).replace(/\"/g, '\'') : '';
             break;
         case 'number':
             result = result ? Number(result) : 0;
             break;
         case 'object':
-            result = result ? JSON.parse(result) : '';
+            result = result ? (new Function('', "return " + result))() : '';
             break;
         case 'function':
-            result = "" + result;
-            result && generateFnField(val, splitArr[1]);
+            result = ("" + result).replace(/\"/g, '\'');
+            result && generateFnField(result, splitArr[1]);
             break;
     }
     return result;
@@ -258,7 +265,8 @@ var generateFnField = function (fnStr, param) {
     if (formulaMap.get(fnStr))
         return;
     // TODO 这里根本不知道导入的Formula
-    formulaStr = formulaStr + "Formula.set('" + fnStr + "', function (" + (param || '') + ") { return " + fnStr + " });";
+    formulaMap.set(fnStr, fnStr);
+    formulaStr = formulaStr + "\nFormula.set(\"" + fnStr + "\", function (" + (param || "") + ") { return " + fnStr + " });\n";
     writeFormulaTimer && clearTimeout(writeFormulaTimer);
     writeFormulaTimer = setTimeout(function () {
         writeDataToFile(buildCfg.formula.outputPath + "/" + buildCfg.formula.fileName, formulaStr, false);
@@ -273,6 +281,8 @@ var generateFnField = function (fnStr, param) {
 var writeDataToFile = function (path, data, isStringify) {
     if (isStringify === void 0) { isStringify = true; }
     var exportData = isStringify ? JSON.stringify(data) : data;
+    // let exportData = isStringify ? JSON.stringify(data).replace(/\\/g, '').replace(/\"/g, '\'') : data;
+    // let exportData = isStringify ? JSON.stringify(data) : data;
     fs_1.default.writeFile(path, exportData, 'utf-8', function (err) {
         if (err) {
             console.log(err);
